@@ -47,5 +47,22 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+        <array>
+            <string>fetch</string>
+            <string>remote-notification</string>
+        </array>
+        <key>UIUserNotificationSettings</key>
+        <dict>
+            <key>categories</key>
+            <array>
+                <!-- Add any notification categories if needed -->
+            </array>
+        </dict>
+        <key>NSAppTransportSecurity</key>
+        <dict>
+            <key>NSAllowsArbitraryLoads</key>
+            <true/>
+        </dict>
 </dict>
 </plist>
