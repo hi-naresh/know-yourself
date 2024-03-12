@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:knowyourself/screens/widgets/AppButtons.dart';
 import 'package:provider/provider.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 import '../../../models/Questions.dart';
 import '../../../provider/MySpace/question_provider.dart';
 import '../../../utils/ui_colors.dart';
+import '../../widgets/AppButtons.dart';
 import '../../widgets/CustomTitles.dart';
 
 class QuestionSpace extends StatefulWidget {
-  const QuestionSpace({super.key});
+  const QuestionSpace({Key? key});
 
   @override
   State<QuestionSpace> createState() => _QuestionSpaceState();
@@ -20,7 +21,7 @@ class _QuestionSpaceState extends State<QuestionSpace> {
   DateTime _selectedDate = DateTime.now();
   String _selectedCategory = 'short';
 
-  void _addQuestion() {
+  void _addQuestion(BuildContext context) {
     if (_questionController.text.isEmpty || _selectedDate == null) return;
 
     Provider.of<QuestionsProvider>(context, listen: false).addQuestion(
@@ -31,6 +32,9 @@ class _QuestionSpaceState extends State<QuestionSpace> {
       ),
     );
     _questionController.clear(); // Clear the text field after question is added
+
+    // Show local notification
+    showNotification();
   }
 
   void _presentDatePicker() {
@@ -49,15 +53,26 @@ class _QuestionSpaceState extends State<QuestionSpace> {
 
   void onPressed() {
     //modalSheet menu with daily, weekly, monthly, yearly
+  }
 
+  // Function to show local notification
+  Future<void> showNotification() async {
+    await AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: 0,
+        channelKey: 'basic_channel',
+        title: 'Question Added',
+        body: 'Your question has been added successfully!',
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height*0.7,
+      height: MediaQuery.of(context).size.height * 0.7,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -65,15 +80,19 @@ class _QuestionSpaceState extends State<QuestionSpace> {
               TextSpan(
                 children: [
                   TextSpan(
-                      text: 'My ',
-                      style: TextStyle(
-                          fontSize: 24.sp, fontWeight: FontWeight.w600)),
+                    text: 'My ',
+                    style: TextStyle(
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   TextSpan(
                     text: 'Questions',
                     style: TextStyle(
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.w600,
-                        color: kApp4),
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.w600,
+                      color: kApp4,
+                    ),
                   ),
                 ],
               ),
@@ -105,7 +124,8 @@ class _QuestionSpaceState extends State<QuestionSpace> {
                     style: customTitle(kWhite, 14.sp),
                   ),
                 ),
-                FilledButton(onPressed: onPressed,
+                FilledButton(
+                  onPressed: onPressed,
                   style: appButtonStyle(context),
                   child: Text(
                     'Reminder',
@@ -121,7 +141,6 @@ class _QuestionSpaceState extends State<QuestionSpace> {
                 ChoiceChip(
                   label: Text('Short-term'),
                   selected: _selectedCategory == 'short',
-                  // labelPadding: EdgeInsets.all(5.0),
                   labelStyle: TextStyle(
                     color: kDarkText,
                   ),
@@ -132,7 +151,6 @@ class _QuestionSpaceState extends State<QuestionSpace> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.0),
                   ),
-                  // selectedColor: kApp4,
                   onSelected: (selected) {
                     if (selected) {
                       setState(() {
@@ -169,7 +187,7 @@ class _QuestionSpaceState extends State<QuestionSpace> {
             FilledButton(
               style: appButtonStyle(context),
               child: Text('Add Question'),
-              onPressed: _addQuestion,
+              onPressed: () => _addQuestion(context),
             ),
             SizedBox(height: 20),
             Expanded(
